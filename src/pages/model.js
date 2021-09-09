@@ -1,10 +1,57 @@
 import React from "react";
-import { motion } from "framer-motion";
+import {
+  motion,
+  transform,
+  useTransform,
+  useViewportScroll,
+} from "framer-motion";
 //Components
 import ScrollForMore from "../components/scrollForMore";
 //Ease
 
+const transition = { duration: 1.4, ease: [0.6, 0.01, -0.05, 0.9] };
+
+const firstName = {
+  initial: { y: 0 },
+  animate: {
+    y: 0,
+    transition: {
+      delayChildren: 0.6,
+      staggerChildren: 0.04,
+      staggerDirection: -1,
+    },
+  },
+};
+
+const letter = {
+  initial: {
+    y: 400,
+  },
+  animate: {
+    y: 0,
+    transition: { duration: 1, ...transition },
+  },
+};
+const lastName = {
+  initial: { y: 0 },
+  animate: {
+    y: 0,
+    transition: {
+      delayChildren: 0.6,
+      staggerChildren: 0.04,
+      staggerDirection: 1,
+    },
+  },
+};
+
 const Model = ({ imageDetails }) => {
+  const { scrollYProgress } = useViewportScroll(); //scroYProgress returns the Y value of our scroll, If at top it reurns 0, and at bottom it returns 0
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.5]);
+  //useTransform creates a MotionValue that transforms the output of another MotionValue by mapping it from one range of values into another.
+  //so here we take the scrollyProgress , defining it's range i.e 0to 1 in first array and then defining the scale in second array
+  //this let the image with scale property to scale when user scroll
+
   // imageDetails is defined in app.js. What we want is pass these values to this component and convert our full width image into size specified in imageDetails using initial of framer-motion so that we can animate the image to full width on page load
   return (
     <motion.div
@@ -16,30 +63,38 @@ const Model = ({ imageDetails }) => {
       <div className="container fluid">
         <div className="row center top-row">
           <div className="top">
-            <motion.div initial={{ opacity: 0 }} className="details">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: { delay: 1.2, ...transition },
+              }}
+              className="details"
+            >
               <div className="location">
                 <span>28.538336</span>
                 <span>-81.379234</span>
               </div>
               <div className="mua">MUA: @mylifeascrystall</div>
             </motion.div>
-            <motion.div initial={{ opacity: 0 }} className="model">
-              <span className="first">
-                <span>Y</span>
-                <span>a</span>
-                <span>s</span>
-                <span>m</span>
-                <span>e</span>
-                <span>e</span>
-                <span>n</span>
-              </span>
-              <span className="last">
-                <span>T</span>
-                <span>a</span>
-                <span>r</span>
-                <span>i</span>
-                <span>q</span>
-              </span>
+            <motion.div className="model">
+              <motion.span variants={firstName} className="first">
+                <motion.span variants={letter}>Y</motion.span>
+                <motion.span variants={letter}>a</motion.span>
+                <motion.span variants={letter}>s</motion.span>
+                <motion.span variants={letter}>m</motion.span>
+                <motion.span variants={letter}>e</motion.span>
+                <motion.span variants={letter}>e</motion.span>
+                <motion.span variants={letter}>n</motion.span>
+              </motion.span>
+              <motion.span variants={lastName} className="last">
+                <motion.span variants={letter}>T</motion.span>
+                <motion.span variants={letter}>a</motion.span>
+                <motion.span variants={letter}>r</motion.span>
+                <motion.span variants={letter}>i</motion.span>
+                <motion.span variants={letter}>q</motion.span>
+              </motion.span>
             </motion.div>
           </div>
         </div>
@@ -48,15 +103,29 @@ const Model = ({ imageDetails }) => {
             <div className="image-container-single">
               <motion.div
                 initial={{
-                  y: "-50%",
+                  y: "-50%", //to center the image
                   width: imageDetails.width,
                   height: imageDetails.height,
+                }}
+                animate={{
+                  y: 0, //make the image come to original position
+                  width: "100%",
+                  height: window.innerWidth > 1440 ? 800 : 400,
+                  // responsive design , bettwe to use resize hook
+                  transition: { delay: 0.2, ...transition },
                 }}
                 className="thumbnail-single"
               >
                 <div className="frame-single">
                   <motion.img
+                    style={{ scale: scale, opacity: opacity }}
                     initial={{ scale: 1.1 }}
+                    animate={{
+                      transition: { delay: 0.2, ...transition },
+                      // extend transition
+                      y: window.innerWidth > 1440 ? -1000 : -600,
+                    }}
+                    // when user clicks on the image in home page , image is scaled to 1.1 , to maintain consistency we use it here
                     src={require("../images/yasmeen.webp")}
                     alt="an image"
                   />

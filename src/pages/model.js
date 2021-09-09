@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   motion,
   transform,
@@ -53,8 +53,22 @@ const Model = ({ imageDetails }) => {
   //this let the image with scale property to scale when user scroll
 
   // imageDetails is defined in app.js. What we want is pass these values to this component and convert our full width image into size specified in imageDetails using initial of framer-motion so that we can animate the image to full width on page load
+
+  const [canScroll, setCanScroll] = useState(false);
+
+  useEffect(() => {
+    if (canScroll === false) {
+      document.querySelector("body").classList.add("no-scroll");
+    } else {
+      document.querySelector("body").classList.remove("no-scroll");
+    }
+  }, [canScroll]);
+  //we need to pass canScroll b.c if not than useEffect will run only on first load, passing canScroll makes the useEffect to run each time it's value changes
+
   return (
     <motion.div
+      onAnimationComplete={() => setCanScroll(true)}
+      // once the animation is complete set the setScroll to true
       initial="initial"
       animate="animate"
       exit="exit"

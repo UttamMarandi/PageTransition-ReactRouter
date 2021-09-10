@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  motion,
-  transform,
-  useTransform,
-  useViewportScroll,
-} from "framer-motion";
+import { motion, useTransform, useViewportScroll } from "framer-motion";
 //Components
 import ScrollForMore from "../components/scrollForMore";
 //Ease
